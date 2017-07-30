@@ -80,18 +80,6 @@ InfiniteStreamType.prototype.zip = function (other) {
 };
 
 
-InfiniteStreamType.prototype.drop = function (n) {
-    let cursor = this;
-
-    while (n > 0) {
-        cursor = cursor.tail();
-        n -= 1;
-    }
-
-    return cursor;
-};
-
-
 InfiniteStreamType.prototype.get = function (n) {
     return this.drop(n).head();
 };
