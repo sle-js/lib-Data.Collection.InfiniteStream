@@ -27,5 +27,13 @@ module.exports = Unit.Suite("Data.Collection.InfiniteStream")([
 
     Unit.Test("get returns the nth element")(
         Generative.forAll(NON_NEGATIVE_INTEGERS)(n => Assertion
-            .equals(n)(countStream(0).get(n))))
+            .equals(n)(countStream(0).get(n)))),
+
+    Unit.Test("filter out the even numbers")(
+        Generative.forAll(NON_NEGATIVE_INTEGERS)(n => Assertion
+            .equals(n * 2)(countStream(0).filter(n => isEven(n)).get(n))))
 ]);
+
+
+const isEven = n =>
+    n % 2 === 0;
