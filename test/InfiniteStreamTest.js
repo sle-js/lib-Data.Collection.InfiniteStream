@@ -1,3 +1,4 @@
+const Array = require("./Libs").Array;
 const Assertion = require("./Libs").Assertion;
 const Generative = require("./Libs").Generative;
 const Unit = require("./Libs").Unit;
@@ -13,6 +14,15 @@ const INTEGERS =
 
 const NON_NEGATIVE_INTEGERS =
     Generative.randoms().then(things => things.map(s => s.asIntInRange(0)(10000)));
+
+
+const isEven = n =>
+    (n % 2 === 0);
+
+
+const arrayEquals = l1 => l2 =>
+    ((l1.length === l2.length) &&
+    Array.foldl(true)(acc => i => acc && i)(Array.zipWith(e1 => e2 => e1 === e2)(l1)(l2)));
 
 
 module.exports = Unit.Suite("Data.Collection.InfiniteStream")([
@@ -39,9 +49,14 @@ module.exports = Unit.Suite("Data.Collection.InfiniteStream")([
 
     Unit.Test("add 0 to n together using a fold")(
         Generative.forAll(NON_NEGATIVE_INTEGERS)(n => Assertion
-            .equals(n * (n - 1) / 2)(countStream(0).foldn(n)(0)(acc => i => acc + i))))
+            .equals(n * (n - 1) / 2)(countStream(0).foldn(n)(0)(acc => i => acc + i)))),
+
+    Unit.Suite("takeAsArray")([
+        Unit.Test("take 0 should return []")(Assertion
+            .isTrue(arrayEquals(countStream(0).takeAsArray(0))([]))),
+        Unit.Test("take 1 should return [0]")(Assertion
+            .isTrue(arrayEquals(countStream(0).takeAsArray(1))([0]))),
+        Unit.Test("take 5 should return [0, 1, 2, 3, 4]")(Assertion
+            .isTrue(arrayEquals(countStream(0).takeAsArray(5))([0, 1, 2, 3, 4])))
+    ])
 ]);
-
-
-const isEven = n =>
-    n % 2 === 0;
