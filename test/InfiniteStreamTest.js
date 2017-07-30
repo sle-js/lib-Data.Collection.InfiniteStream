@@ -11,6 +11,9 @@ const countStream = n =>
 const INTEGERS =
     Generative.randoms().then(things => things.map(s => s.asIntInRange(-10000)(10000)));
 
+const NON_NEGATIVE_INTEGERS =
+    Generative.randoms().then(things => things.map(s => s.asIntInRange(0)(10000)));
+
 
 module.exports = Unit.Suite("Data.Collection.InfiniteStream")([
     Unit.Test("head returns the first element")(
@@ -20,5 +23,9 @@ module.exports = Unit.Suite("Data.Collection.InfiniteStream")([
     Unit.Test("tail returns the rest of the elements")(
         Generative.forAll(INTEGERS)(n => Assertion
             .equals(n + 1)(countStream(n).tail().head())
-            .equals(n + 2)(countStream(n).tail().tail().head())))
+            .equals(n + 2)(countStream(n).tail().tail().head()))),
+
+    Unit.Test("get returns the nth element")(
+        Generative.forAll(NON_NEGATIVE_INTEGERS)(n => Assertion
+            .equals(n)(countStream(0).get(n))))
 ]);

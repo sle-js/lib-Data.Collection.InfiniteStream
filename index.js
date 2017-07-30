@@ -21,7 +21,7 @@ InfiniteStreamType.prototype.tail = function () {
 InfiniteStreamType.prototype.filter = function (f) {
     let cursor = this;
 
-    while(true) {
+    while (true) {
         const head = cursor.head();
 
         if (f(head)) {
@@ -77,6 +77,23 @@ InfiniteStreamType.prototype.drop = function (n) {
 
 InfiniteStreamType.prototype.zip = function (other) {
     return Cons([this.head(), other.head()])(() => this.tail().zip(other.tail()));
+};
+
+
+InfiniteStreamType.prototype.drop = function (n) {
+    let cursor = this;
+
+    while (n > 0) {
+        cursor = cursor.tail();
+        n -= 1;
+    }
+
+    return cursor;
+};
+
+
+InfiniteStreamType.prototype.get = function (n) {
+    return this.drop(n).head();
 };
 
 
