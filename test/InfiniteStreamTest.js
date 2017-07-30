@@ -35,7 +35,11 @@ module.exports = Unit.Suite("Data.Collection.InfiniteStream")([
 
     Unit.Test("map all elements by doubling")(
         Generative.forAll(NON_NEGATIVE_INTEGERS)(n => Assertion
-            .equals(n * n)(countStream(0).map(n => n * n).get(n))))
+            .equals(n * n)(countStream(0).map(n => n * n).get(n)))),
+
+    Unit.Test("add 0 to n together using a fold")(
+        Generative.forAll(NON_NEGATIVE_INTEGERS)(n => Assertion
+            .equals(n * (n - 1) / 2)(countStream(0).foldn(n)(0)(acc => i => acc + i))))
 ]);
 
 
