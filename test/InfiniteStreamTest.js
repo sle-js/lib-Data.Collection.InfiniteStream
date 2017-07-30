@@ -58,5 +58,8 @@ module.exports = Unit.Suite("Data.Collection.InfiniteStream")([
             .isTrue(arrayEquals(countStream(0).takeAsArray(1))([0]))),
         Unit.Test("take 5 should return [0, 1, 2, 3, 4]")(Assertion
             .isTrue(arrayEquals(countStream(0).takeAsArray(5))([0, 1, 2, 3, 4])))
-    ])
+    ]),
+
+    Unit.Test("zip with count and count + 2")(Assertion
+        .isTrue(countStream(0).zip(countStream(2)).foldn(10)(true)(acc => e => acc && e[0] + 2 === e[1])))
 ]);
