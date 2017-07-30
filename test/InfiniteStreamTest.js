@@ -31,7 +31,11 @@ module.exports = Unit.Suite("Data.Collection.InfiniteStream")([
 
     Unit.Test("filter out the even numbers")(
         Generative.forAll(NON_NEGATIVE_INTEGERS)(n => Assertion
-            .equals(n * 2)(countStream(0).filter(n => isEven(n)).get(n))))
+            .equals(n * 2)(countStream(0).filter(n => isEven(n)).get(n)))),
+
+    Unit.Test("map all elements by doubling")(
+        Generative.forAll(NON_NEGATIVE_INTEGERS)(n => Assertion
+            .equals(n * n)(countStream(0).map(n => n * n).get(n))))
 ]);
 
 
