@@ -19,5 +19,6 @@ module.exports = Unit.Suite("Data.Collection.InfiniteStream")([
 
     Unit.Test("tail returns the rest of the elements")(
         Generative.forAll(INTEGERS)(n => Assertion
-            .equals(n + 1)(countStream(n).tail().head())))
+            .equals(n + 1)(countStream(n).tail().head())
+            .equals(n + 2)(countStream(n).tail().tail().head())))
 ]);
