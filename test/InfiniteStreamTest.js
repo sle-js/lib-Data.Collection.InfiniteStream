@@ -1,6 +1,5 @@
 const Array = require("./Libs").Array;
 const Assertion = require("./Libs").Assertion;
-const Generative = require("./Libs").Generative;
 const Unit = require("./Libs").Unit;
 
 const Stream = require("../index.js");
@@ -9,15 +8,12 @@ const Stream = require("../index.js");
 const countStream = n =>
     Stream.Cons(n)(() => countStream(n + 1));
 
-const INTEGERS =
-    Generative.randoms().then(things => things.map(s => s.asIntInRange(-10000)(10000)));
-
-const NON_NEGATIVE_INTEGERS =
-    Generative.randoms().then(things => things.map(s => s.asIntInRange(0)(10000)));
-
 
 const isEven = n =>
     (n % 2 === 0);
+
+const square = n =>
+    (n * n);
 
 
 const arrayEquals = l1 => l2 =>
@@ -26,30 +22,60 @@ const arrayEquals = l1 => l2 =>
 
 
 module.exports = Unit.Suite("Data.Collection.InfiniteStream")([
-    Unit.Test("head returns the first element")(
-        Generative.forAll(INTEGERS)(n => Assertion
-            .equals(n)(countStream(n).head()))),
+    Unit.Suite("head and tail")([
+        Unit.Test("head of stream")(Assertion
+            .equals(0)(countStream(0).head())),
 
-    Unit.Test("tail returns the rest of the elements")(
-        Generative.forAll(INTEGERS)(n => Assertion
-            .equals(n + 1)(countStream(n).tail().head())
-            .equals(n + 2)(countStream(n).tail().tail().head()))),
+        Unit.Test("head of tail of stream")(Assertion
+            .equals(1)(countStream(0).tail().head())),
 
-    Unit.Test("get returns the nth element")(
-        Generative.forAll(NON_NEGATIVE_INTEGERS)(n => Assertion
-            .equals(n)(countStream(0).get(n)))),
+        Unit.Test("head of tail of tail of stream")(Assertion
+            .equals(2)(countStream(0).tail().tail().head()))
+    ]),
 
-    Unit.Test("filter out the even numbers")(
-        Generative.forAll(NON_NEGATIVE_INTEGERS)(n => Assertion
-            .equals(n * 2)(countStream(0).filter(i => isEven(i)).get(n)))),
+    Unit.Suite("get")([
+        Unit.Test("get(0) of stream")(Assertion
+            .equals(0)(countStream(0).get(0))),
 
-    Unit.Test("map all elements by doubling")(
-        Generative.forAll(NON_NEGATIVE_INTEGERS)(n => Assertion
-            .equals(n * n)(countStream(0).map(i => i * i).get(n)))),
+        Unit.Test("get(1) of stream")(Assertion
+            .equals(1)(countStream(0).get(1))),
 
-    Unit.Test("add 0 to n together using a fold")(
-        Generative.forAll(NON_NEGATIVE_INTEGERS)(n => Assertion
-            .equals(n * (n - 1) / 2)(countStream(0).foldn(n)(0)(acc => i => acc + i)))),
+        Unit.Test("get(2) of stream")(Assertion
+            .equals(2)(countStream(0).get(2)))
+    ]),
+
+    Unit.Suite("filter")([
+        Unit.Test("get(0) of filtered even numbers")(Assertion
+            .equals(0)(countStream(0).filter(isEven).get(0))),
+
+        Unit.Test("get(1) of filtered even numbers")(Assertion
+            .equals(2)(countStream(0).filter(isEven).get(1))),
+
+        Unit.Test("get(2) of filtered even numbers")(Assertion
+            .equals(4)(countStream(0).filter(isEven).get(2)))
+    ]),
+
+    Unit.Suite("map")([
+        Unit.Test("get(0) of map square")(Assertion
+            .equals(0)(countStream(0).map(square).get(0))),
+
+        Unit.Test("get(1) of map square")(Assertion
+            .equals(1)(countStream(0).map(square).get(1))),
+
+        Unit.Test("get(2) of map square")(Assertion
+            .equals(4)(countStream(0).map(square).get(2)))
+    ]),
+
+    Unit.Suite("foldn")([
+        Unit.Test("0 equals sum 1..0")(Assertion
+            .equals(0)((countStream(1).foldn(0)(0)(acc => i => acc + i)))),
+
+        Unit.Test("1 equals sum 1..1")(Assertion
+            .equals(1)((countStream(1).foldn(1)(0)(acc => i => acc + i)))),
+
+        Unit.Test("15 equals sum 1..5")(Assertion
+            .equals(15)((countStream(1).foldn(5)(0)(acc => i => acc + i))))
+    ]),
 
     Unit.Suite("takeAsArray")([
         Unit.Test("take 0 should return []")(Assertion
